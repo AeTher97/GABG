@@ -12,7 +12,7 @@ container5 = Container(443, 300, 100, 30000)
 container_list = []
 containers_to_remove = []
 container_list.append(container)
-container_list.append(container2) 
+container_list.append(container2)
 container_list.append(container5)
 container_list.append(container4)
 container_list.append(container3)
