@@ -1,22 +1,17 @@
 from Classes import Ship
 from Classes import Container
 from Classes import ShipLoader
+from RandomGenerators import ContainerGenerator
 
-ship = Ship(1, 200, 500)
-container = Container(432, 30, 65, 1950)
-container2 = Container(443, 30, 65, 1950)
-container3 = Container(443, 30, 65, 1950)
-container4 = Container(443, 100, 200, 20000)
-container5 = Container(443, 300, 100, 30000)
-
+ship = Ship(1, 250, 550, 10, 100)
 container_list = []
-containers_to_remove = []
-container_list.append(container)
-container_list.append(container2)
-container_list.append(container5)
-container_list.append(container4)
-container_list.append(container3)
+
+for i in range(1, 100):
+    container = ContainerGenerator.GenerateContainer(30, 65, 10, 0)
+    container_list.append(container)
+print("number of containers to load " + str(len(container_list)) + "\n")
 
 ShipLoader.Load_ship(ship, container_list)
-
+print("number of containers to load " + str(len(container_list)) + "\n")
 ship.display_ship()
+ship.get_ship_information()

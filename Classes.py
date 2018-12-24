@@ -27,10 +27,15 @@ class ShipLoader:
 
 
 class Ship:
-    def __init__(self, _ID, _x, _y):
+    def __init__(self, _ID, _x, _y, _z, capacity):
         self.ID = _ID
         self.x = _x
         self.y = _y
+        self.z = _z
+        self.capacity = self.x * self.y * self.z
+        self.volume = self.x * self.y * self.z
+        self.current_capacity = capacity
+        self.current_volume = self.volume
         self.containers = []
         self.decks = []
         self.decks.append(Deck(_x, _y, 0, 0))
@@ -49,7 +54,32 @@ class Ship:
             print("cannot load the container \n")
             return 1
 
+    def send_ship(self):
+        # TODO
+        print("chuje wie co tu ma byc")
+
+    def unload_ship(self):
+        unloaded_containers = self.containers
+        self.containers.clear()
+        self.current_volume = self.volume
+
+        return unloaded_containers
+
+    def get_ship_information(self):
+
+        ID_and_sizes = "Ship ID: " + str(self.ID) + " Sizes(x,y,z): " + str(self.x) + ", " + str(self.y) + ", " + str(
+            self.z) + "\n"
+        capacity_volume_current_capacity_volume = "Capacity: " + str(self.capacity) + " Volume: " + str(
+            self.volume) + " Current Capacity: " + str(self.current_capacity) + " Current Volume: " + str(
+            self.current_volume) + "\n"
+        print(ID_and_sizes + capacity_volume_current_capacity_volume)
+        return (ID_and_sizes + capacity_volume_current_capacity_volume)
+
+
     def load_container_on_deck(self, deck, container):
+        if self.current_capacity == 0:
+            print("Ship is full(capacity left = 0")
+            return 1
         if (container.x <= deck.x and container.y <= deck.y):
             load = 1;
         elif (container.y <= deck.x and container.x <= deck.y):
@@ -69,6 +99,8 @@ class Ship:
             container.position_x = deck.origin_x
             container.position_y = deck.origin_y
             self.containers.append(container)
+            self.current_volume = self.current_volume - container.volume
+            self.current_capacity = self.current_capacity -1
             return 0
         else:
             return 1
@@ -129,11 +161,13 @@ class Deck:
 
 
 class Container:
-    def __init__(self, _ID, _x, _y, _mass):
+    def __init__(self, _ID, _x, _y, _z):
         # self.time_stamp = _timestamp
         self.x = _x
         self.y = _y
+        self.z = _z
+        self.volume = self.x * self.y * self.z
         self.ID = _ID
-        self.mass = _mass
+        self.mass = self.x * self.y * self.z * 1000
         self.position_x = 0
         self.position_y = 0
