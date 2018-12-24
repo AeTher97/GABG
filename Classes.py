@@ -1,5 +1,7 @@
 import pygame
-from math import pi
+import datetime
+import math
+
 
 WHITE = (255, 255, 255)
 BASE_COLOR = {0, 0, 0}
@@ -25,7 +27,8 @@ class ShipLoader:
 
 
 class Ship:
-    def __init__(self, _x, _y):
+    def __init__(self, _ID, _x, _y):
+        self.ID = _ID
         self.x = _x
         self.y = _y
         self.containers = []
@@ -72,11 +75,14 @@ class Ship:
 
     def display_ship(self):
         pygame.init()
-        screen = pygame.display.set_mode((self.x, self.y))
+        screen = pygame.display.set_mode((self.x, self.y + math.floor(300 / 700 * self.y)))
 
         clock = pygame.time.Clock()
-
+        background = pygame.image.load("background.jpg").convert()
+        background = pygame.transform.rotate(background, 90)
+        background = pygame.transform.scale(background, [self.x, self.y + math.floor(300 / 700 * self.y)])
         running = True
+        pygame.display.set_caption('SHIP ID - ' + str(self.ID))
 
         # main loop
         while running:
@@ -89,14 +95,18 @@ class Ship:
                     running = False
             color_loop = 100
             color = 1
+            screen.blit(background, [0, 0])
+
             for container in self.containers:
+
                 if color == 1:
                     COLOR = [color_loop, 0, 0]
                 elif color == 2:
                     COLOR = [0, color_loop, 0]
                 else:
                     COLOR = [0, 0, color_loop]
-                pygame.draw.rect(screen, COLOR, [container.position_x, container.position_y, container.x, container.y],
+                pygame.draw.rect(screen, COLOR, [container.position_x, container.position_y + math.floor(
+                    220 / 1011 * (self.y + math.floor(300 / 700 * self.y))), container.x, container.y],
                                  0)
                 color_loop = color_loop + 10
                 color = color + 1
@@ -120,9 +130,10 @@ class Deck:
 
 class Container:
     def __init__(self, _ID, _x, _y, _mass):
+        # self.time_stamp = _timestamp
         self.x = _x
         self.y = _y
         self.ID = _ID
         self.mass = _mass
-        self.position_x = 0;
-        self.position_y = 0;
+        self.position_x = 0
+        self.position_y = 0

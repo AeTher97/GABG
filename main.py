@@ -2,7 +2,7 @@ from Classes import Ship
 from Classes import Container
 from Classes import ShipLoader
 
-ship = Ship(500, 500)
+ship = Ship(1, 200, 500)
 container = Container(432, 30, 65, 1950)
 container2 = Container(443, 30, 65, 1950)
 container3 = Container(443, 30, 65, 1950)
