@@ -1,0 +1,15 @@
+Port 1 Capacity: 3
+Ships:
+Ship ID: 1 X: 200 Y: 400 Z: 10 Capacity: 100
+Ship ID: 2 X: 200 Y: 500 Z: 10 Capacity: 100
+Containers:
+Container ID: 101 X: 30 Y: 65 Z: 10 Timestamp:1-10-2018 DestinationID: 2
+Container ID: 102 X: 35 Y: 68 Z: 10 Timestamp:2-15-2018 DestinationID: 2
+
+Port 2 Capacity: 4
+Ships:
+Ship ID: 3 X: 200 Y: 500 Z: 10 Capacity: 100
+Ship ID: 4 X: 200 Y: 500 Z: 10 Capacity: 100
+Containers:
+Container ID: 103 X: 30 Y: 65 Z: 10 Timestamp:1-10-2018 DestinationID: 1
+Container ID: 104 X: 35 Y: 68 Z: 10 Timestamp:2-15-2018 DestinationID: 1

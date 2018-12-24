@@ -161,8 +161,8 @@ class Deck:
 
 
 class Container:
-    def __init__(self, _ID, _x, _y, _z):
-        # self.time_stamp = _timestamp
+    def __init__(self, _ID, _x, _y, _z, _timestamp, _destination):
+        self.timestamp = _timestamp
         self.x = _x
         self.y = _y
         self.z = _z
@@ -171,3 +171,60 @@ class Container:
         self.mass = self.x * self.y * self.z * 1000
         self.position_x = 0
         self.position_y = 0
+        self.destination = _destination
+
+
+class Timestamp:
+    def __init__(self, _month, _day, _year):
+        self.month = _month
+        self.day = _day
+        self.year = _year
+
+    def date_to_number_of_days(self):
+        return self.year * 365 + self.month * 31 + self.day
+
+    def get_container_information(self):
+        ID_and_sizes = "Ship ID: " + str(self.ID) + " Sizes(x,y,z): " + str(self.x) + ", " + str(self.y) + ", " + str(
+            self.z) + "\n"
+        volume = "Volume: " + str(self.volume) + "\n"
+        print(ID_and_sizes + volume)
+        return (ID_and_sizes + volume)
+
+
+class Port:
+    def __init__(self, _ID, _ship_capacity):
+        self.containers = []
+        self.ID = _ID
+        self.ship_capacity = _ship_capacity
+        self.ships = []
+
+    def add_ship(self, ship):
+        self.ships.append(ship)
+
+    def add_conatiner(self, container):
+        self.containers.append(container)
+
+    def send_ship(self, ship_id, dest_port_id):
+        # TODO
+        print("lolz")
+
+    def dock_ship(self, ship):
+        if len(self.ships) < self.ship_capacity:
+            self.add_ship(ship)
+            return 0
+        else:
+            return 1
+
+    def get_ships(self):
+        return self.ships
+
+    def load_ship(self, ship_id):
+        for x in self.ships:
+            if x.ID == ship_id:
+                ShipLoader.Load_ship(x, self.containers)
+                print("loaded ship")
+                break
+        else:
+            x = None
+            print("couldn't find ship")
+            return 1
