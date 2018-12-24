@@ -1,8 +1,8 @@
-# SOME SHIP LOADING SOFTWARE
+# Ship Loading Software
 
-To use python loading system Pygame library is required
+To use python loading system Pygame library is required.
 
 To install pygame on Windows use:
 ```
-pip install pygame
+C:\pip install pygame
 ```
