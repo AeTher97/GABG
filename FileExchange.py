@@ -15,7 +15,7 @@ def ParseLine(line, rx):
 class FileExchange:
 
     @staticmethod
-    def LoadContainersFromFile(path):
+    def LoadAllDataFromFile(path):
         port_list = []
         data = []
         rx_dict = {
@@ -69,7 +69,6 @@ class FileExchange:
 
                     port_list.append(port_object)
                 line = file_object.readline()
-        print("readey")
         return port_list
 
     @staticmethod
@@ -91,5 +90,73 @@ class FileExchange:
 
     @staticmethod
     def SaveShip(path, ship):
-        print("nic")
-        # TODO
+        file = open(path, 'w')
+        file.write("Ship ID: " + str(ship.ID) + " X: " + str(ship.x) + " Y: " + str(ship.y) + " Z: " + str(
+            ship.z) + " Capacity: " + str(ship.capacity) + " Number of containers: " + str(len(ship.containers)) + '\n')
+        for container in ship.containers:
+            file.write("Container ID: " + str(container.ID) + " X: " + str(container.x) + " Y: " + str(
+                container.y) + " Z: " + str(
+                container.z) + " Position X: " + str(container.position_x) + " Position Y: " + str(
+                container.position_y) + " Timestamp:" + container.timestamp.get_string() + " DestinationID: " + str(
+                container.destination) + "\n")
+        file.write('\n')
+
+    @staticmethod
+    def LoadShipFromFile(path):
+        rx_dict = {
+            'ship': re.compile(
+                r'Ship ID: (?P<ShipID>\d+) X: (?P<X>\d+) Y: (?P<Y>\d+) Z: (?P<Z>\d+) Capacity: (?P<Capacity>\d+)'),
+            'container': re.compile(
+                r'Container ID: (?P<ContainerID>\d+) X: (?P<X>\d+) Y: (?P<Y>\d+) Z: (?P<Z>\d+) Position X: (?P<PositionX>\d+) Position Y: (?P<PositionY>\d+) Timestamp:(?P<Month>\d+)-(?P<Day>\d+)-(?P<Year>\d+) DestinationID: (?P<DestinationID>\d+)')
+        }
+
+        with open(path, "r") as file_object:
+            line = file_object.readline()
+            ships = []
+            while line:
+                key, match = ParseLine(line, rx_dict)
+                if key == 'ship':
+
+                    ship = int(match.group('ShipID'))
+                    x = int(match.group('X'))
+                    y = int(match.group('Y'))
+                    z = int(match.group('Z'))
+                    ship_capacity = int(match.group('Capacity'))
+                    ship_ID = int(ship)
+                    print("SHIP ID: " + str(ship_ID))
+                    ship_object = Ship(ship, x, y, z, ship_capacity)
+
+                    line = file_object.readline()
+                    while line.strip():
+                        key, match = ParseLine(line, rx_dict)
+                        if key == 'container':
+                            container = int(match.group('ContainerID'))
+                            x = int(match.group('X'))
+                            y = int(match.group('Y'))
+                            z = int(match.group('Z'))
+                            position_x = int(match.group('PositionX'))
+                            position_y = int(match.group('PositionY'))
+                            month = int(match.group('Month'))
+                            day = int(match.group('Day'))
+                            year = int(match.group('Year'))
+                            destination = int(match.group('DestinationID'))
+                            timestamp = Timestamp(month, day, year)
+                            print("CONTAINER ID: " + str(container) + " X: " + str(x) + " Y: " + str(y) + " Z: " + str(
+                                z) + " Position X: " + str(position_x) + " Position Y: " + str(
+                                position_y) + " Date: " + str(month) + "-" + str(day) + "-" + str(
+                                year) + " Destination: " + str(
+                                destination))
+                            container_object = Container(container, x, y, z, timestamp, destination)
+                            container_object.position_x = position_x
+                            container_object.position_y = position_y
+                            ship_object.containers.append(container_object)
+                            ship_object.current_volume = ship_object.current_volume - container_object.volume
+                            ship_object.current_capacity = ship_object.current_capacity - 1
+                        line = file_object.readline()
+
+                line = file_object.readline()
+        try:
+            return ship_object
+        except:
+            print("can't find ship in file")
+            return None

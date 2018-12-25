@@ -91,11 +91,14 @@ class Ship:
             load = 0;
 
         if load == 1:
-            new_deck1 = Deck(deck.x - container.x, deck.y, deck.origin_x + container.x, deck.origin_y)
+            new_deck1 = Deck(deck.x - container.x, container.y, deck.origin_x + container.x, deck.origin_y)
             new_deck2 = Deck(container.x, deck.y - container.y, deck.origin_x, deck.origin_y + container.y)
+            new_deck3 = Deck(deck.x - container.x, deck.y - container.y, deck.origin_x + container.x,
+                             deck.origin_y + container.y)
             self.decks.remove(deck)
             self.decks.append(new_deck2)
             self.decks.append(new_deck1)
+            self.decks.append(new_deck3)
             container.position_x = deck.origin_x
             container.position_y = deck.origin_y
             self.containers.append(container)
@@ -151,14 +154,25 @@ class Ship:
                 label_month = myfont.render(str(container.timestamp.month), 1, (0, 0, 0))
                 label_day = myfont.render(str(container.timestamp.day), 1, (0, 0, 0))
                 label_year = myfont.render(str(container.timestamp.year), 1, (0, 0, 0))
-                screen.blit(label_ID, (container.position_x, container.position_y + math.floor(
-                    220 / 1011 * (self.y + math.floor(300 / 700 * self.y)))))
-                screen.blit(label_month, (container.position_x, container.position_y + font_size + math.floor(
-                    220 / 1011 * (self.y + math.floor(300 / 700 * self.y)))))
-                screen.blit(label_day, (container.position_x, container.position_y + 2 * font_size + math.floor(
-                    220 / 1011 * (self.y + math.floor(300 / 700 * self.y)))))
-                screen.blit(label_year, (container.position_x, container.position_y + 3 * font_size + math.floor(
-                    220 / 1011 * (self.y + math.floor(300 / 700 * self.y)))))
+                label_one_line = myfont.render(
+                    str(container.timestamp.month) + "-" + str(container.timestamp.day) + "-" + str(
+                        container.timestamp.year), 1, (0, 0, 0))
+                if container.y > container.x:
+                    screen.blit(label_ID, (container.position_x, container.position_y + math.floor(
+                        220 / 1011 * (self.y + math.floor(300 / 700 * self.y)))))
+                    screen.blit(label_month, (container.position_x, container.position_y + font_size + math.floor(
+                        220 / 1011 * (self.y + math.floor(300 / 700 * self.y)))))
+                    screen.blit(label_day, (container.position_x, container.position_y + 2 * font_size + math.floor(
+                        220 / 1011 * (self.y + math.floor(300 / 700 * self.y)))))
+                    screen.blit(label_year, (container.position_x, container.position_y + 3 * font_size + math.floor(
+                        220 / 1011 * (self.y + math.floor(300 / 700 * self.y)))))
+                else:
+                    screen.blit(label_ID, (container.position_x, container.position_y + math.floor(
+                        220 / 1011 * (self.y + math.floor(300 / 700 * self.y)))))
+                    screen.blit(label_one_line, (container.position_x, container.position_y + font_size + math.floor(
+                        220 / 1011 * (self.y + math.floor(300 / 700 * self.y)))))
+
+
 
             pygame.display.flip()
 
