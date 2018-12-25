@@ -7,6 +7,7 @@ WHITE = (255, 255, 255)
 BASE_COLOR = {0, 0, 0}
 
 
+
 class ShipLoader:
     @staticmethod
     def LoadShip(ship, container_list, merges_number, by_date):
@@ -330,7 +331,7 @@ class Port:
         self.destination_list = []
         self.containers_with_destination = []
 
-    def resolve_port(self):
+    def resolve_port(self, generate_trip_reports):
         self.create_destination_list()
         containers_to_remove = []
         ships_to_send = []
@@ -349,7 +350,7 @@ class Port:
                 for ship in ships_to_send:
                     print("sending ship" + str(ship.ID))
                     ship.display_ship(self.ID)
-                    self.send_ship(ship.ID, ship.containers[0].destination)
+                    self.send_ship(ship.ID, ship.containers[0].destination, generate_trip_reports)
                 for ship in ships_to_send:
                     self.undock_ship(ship)
             else:
@@ -391,7 +392,7 @@ class Port:
     def add_container(self, container):
         self.containers.append(container)
 
-    def send_ship(self, ship_id, dest_port_id):
+    def send_ship(self, ship_id, dest_port_id, generate_trip_reports):
         for x in self.ports_list:
             if x.ID == dest_port_id:
                 for y in self.ships:
@@ -399,7 +400,8 @@ class Port:
                         trip_number = 0
                         for port in self.ports_list:
                             trip_number = trip_number + port.ships_send
-                        GenerateSendReport("", y, self.ID, dest_port_id, trip_number)
+                        if generate_trip_reports:
+                            GenerateSendReport("", y, self.ID, dest_port_id, trip_number)
                         print("docking ship" + str(y.ID))
                         x.dock_ship(y)
                         self.ships_send = self.ships_send + 1

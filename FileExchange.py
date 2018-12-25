@@ -178,3 +178,21 @@ class FileExchange:
         except:
             print("can't find ship in file")
             return None
+
+
+def ship_containers(path, output_path, generate_trip_reports=True):
+    ports = FileExchange.LoadAllDataFromFile(path)
+
+    not_resolved_ports = 0
+    for port in ports:
+        not_resolved_ports = not_resolved_ports + port.not_resolved
+    while not_resolved_ports > 0:
+        not_resolved_ports = 0
+        for port in ports:
+            not_resolved_ports = not_resolved_ports + port.not_resolved
+        for port in ports:
+            port.resolve_port(generate_trip_reports)
+
+    FileExchange.SaveAllDataToFile(output_path, ports)
+    for port in ports:
+        print(str(len(port.containers)) + " containers in port " + str(port.ID) + "\n")
