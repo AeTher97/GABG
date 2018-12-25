@@ -9,8 +9,11 @@ BASE_COLOR = {0, 0, 0}
 
 class ShipLoader:
     @staticmethod
-    def Load_ship(ship, container_list):
-        container_list.sort(key=lambda x: x.timestamp.date_to_number_of_days(), reverse=False)
+    def Load_ship(ship, container_list, merges_number, by_date):
+        if (by_date == True):
+            container_list.sort(key=lambda x: x.timestamp.date_to_number_of_days(), reverse=False)
+        if (by_date == False):
+            container_list.sort(key=lambda x: x.volume, reverse=True)
 
         containers_to_remove = []
         for contain in container_list:
@@ -20,16 +23,20 @@ class ShipLoader:
         for contain in containers_to_remove:
             container_list.remove(contain)
 
-        for i in range(0, len(ship.decks)):
-            ship.merge_deck()
-        print("merge decks used \n")
-        containers_to_remove = []
-        for contain in container_list:
-            if (ship.load_container(contain) == 0):
-                containers_to_remove.append(contain)
+        for j in range(0, merges_number):
+            for i in range(0, len(ship.decks)):
+                ship.merge_deck()
+            print("merge decks used \n")
 
-        for contain in containers_to_remove:
-            container_list.remove(contain)
+            containers_to_remove = []
+            for contain in container_list:
+                if (ship.load_container(contain) == 0):
+                    containers_to_remove.append(contain)
+
+            for contain in containers_to_remove:
+                container_list.remove(contain)
+
+
 
 
         if len(container_list) == 0:
@@ -109,10 +116,10 @@ class Ship:
                     loaded = 1;
 
         if loaded == 1:
-            print("container loaded sucesfully \n")
+            # print("container loaded sucesfully \n")
             return 0
         else:
-            print("cannot load the container \n")
+            #print("cannot load the container \n")
             return 1
 
     def send_ship(self):
@@ -335,10 +342,10 @@ class Port:
     def get_ships(self):
         return self.ships
 
-    def load_ship(self, ship_id):
+    def load_ship(self, ship_id, merges_number, by_date):
         for x in self.ships:
             if x.ID == ship_id:
-                ShipLoader.Load_ship(x, self.containers)
+                ShipLoader.Load_ship(x, self.containers, merges_number, by_date)
                 print("loaded ship")
                 break
         else:

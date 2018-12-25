@@ -33,7 +33,7 @@ class FileExchange:
                 if key == 'port':
                     port_id = int(match.group('PortID'))
                     port_capacity = int(match.group('Capacity'))
-                    print("PORT ID: " + str(port_id))
+                    # print("PORT ID: " + str(port_id))
                     port_object = Port(port_id, port_capacity)
                     line = file_object.readline()
                     while line.strip():
@@ -45,8 +45,8 @@ class FileExchange:
                             z = int(match.group('Z'))
                             ship_capacity = int(match.group('Capacity'))
                             ship_ID = int(ship)
-                            print("SHIP ID: " + str(ship_ID) + " X: " + str(x) + " Y: " + str(y) + " Z: " + str(
-                                z) + " Capacity: " + str(ship_capacity))
+                            # print("SHIP ID: " + str(ship_ID) + " X: " + str(x) + " Y: " + str(y) + " Z: " + str(
+                            #    z) + " Capacity: " + str(ship_capacity))
                             ship_object = Ship(ship, x, y, z, ship_capacity)
                             port_object.add_ship(ship_object)
 
@@ -60,15 +60,21 @@ class FileExchange:
                             year = int(match.group('Year'))
                             destination = int(match.group('DestinationID'))
                             timestamp = Timestamp(month, day, year)
-                            print("CONTAINER ID: " + str(container) + " X: " + str(x) + " Y: " + str(y) + " Z: " + str(
-                                z) + " Date: " + str(month) + "-" + str(day) + "-" + str(year) + " Destination: " + str(
-                                destination))
+                            # print("CONTAINER ID: " + str(container) + " X: " + str(x) + " Y: " + str(y) + " Z: " + str(
+                            #    z) + " Date: " + str(month) + "-" + str(day) + "-" + str(year) + " Destination: " + str(
+                            #    destination))
                             container_object = Container(container, x, y, z, timestamp, destination)
                             port_object.add_conatiner(container_object)
                         line = file_object.readline()
 
                     port_list.append(port_object)
                 line = file_object.readline()
+        if (port_list != None):
+            print("\nSucesfully loaded " + str(len(port_list)) + " ports from file\n")
+            for port in port_list:
+                print("PORT " + str(port.ID))
+                print(str(len(port.containers)) + " containers")
+                print(str(len(port.ships)) + " ships\n")
         return port_list
 
     @staticmethod
@@ -123,7 +129,7 @@ class FileExchange:
                     z = int(match.group('Z'))
                     ship_capacity = int(match.group('Capacity'))
                     ship_ID = int(ship)
-                    print("SHIP ID: " + str(ship_ID))
+                    #print("SHIP ID: " + str(ship_ID))
                     ship_object = Ship(ship, x, y, z, ship_capacity)
 
                     line = file_object.readline()
@@ -141,11 +147,11 @@ class FileExchange:
                             year = int(match.group('Year'))
                             destination = int(match.group('DestinationID'))
                             timestamp = Timestamp(month, day, year)
-                            print("CONTAINER ID: " + str(container) + " X: " + str(x) + " Y: " + str(y) + " Z: " + str(
-                                z) + " Position X: " + str(position_x) + " Position Y: " + str(
-                                position_y) + " Date: " + str(month) + "-" + str(day) + "-" + str(
-                                year) + " Destination: " + str(
-                                destination))
+                            # print("CONTAINER ID: " + str(container) + " X: " + str(x) + " Y: " + str(y) + " Z: " + str(
+                            #    z) + " Position X: " + str(position_x) + " Position Y: " + str(
+                            #    position_y) + " Date: " + str(month) + "-" + str(day) + "-" + str(
+                            #    year) + " Destination: " + str(
+                            #    destination))
                             container_object = Container(container, x, y, z, timestamp, destination)
                             container_object.position_x = position_x
                             container_object.position_y = position_y
@@ -156,6 +162,8 @@ class FileExchange:
 
                 line = file_object.readline()
         try:
+            print("Sucesfully loaded ship\n")
+            print(str(len(ship_object.containers)) + " containers\n")
             return ship_object
         except:
             print("can't find ship in file")
