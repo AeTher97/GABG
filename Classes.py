@@ -20,6 +20,18 @@ class ShipLoader:
         for contain in containers_to_remove:
             container_list.remove(contain)
 
+        for i in range(0, len(ship.decks)):
+            ship.merge_deck()
+
+        containers_to_remove = []
+        for contain in container_list:
+            if (ship.load_container(contain) == 0):
+                containers_to_remove.append(contain)
+
+        for contain in containers_to_remove:
+            container_list.remove(contain)
+
+
         if len(container_list) == 0:
             print("loaded all the containers")
         else:
@@ -39,6 +51,55 @@ class Ship:
         self.containers = []
         self.decks = []
         self.decks.append(Deck(_x, _y, 0, 0))
+
+    def merge_deck(self):
+        merged = 0
+        for deck_1 in self.decks:
+            for deck_2 in self.decks:
+                if deck_1 != deck_2:
+                    if deck_2.origin_y >= deck_1.origin_y:
+
+                        if deck_1.origin_y + deck_1.y >= deck_2.origin_y and deck_2.origin_x == deck_1.origin_x + deck_1.x and deck_2.origin_y + deck_2.y >= deck_1.origin_y + deck_1.y:
+                            size_of_new_deck = (deck_1.origin_y + deck_1.y - deck_2.origin_y) * (deck_1.x + deck_2.x)
+                            if size_of_new_deck > deck_1.size and size_of_new_deck > deck_2.size:
+                                new_deck1 = Deck(deck_1.x, deck_2.origin_y - deck_1.origin_y, deck_1.origin_x,
+                                                 deck_1.origin_y)
+                                new_deck2 = Deck(deck_1.x + deck_2.x, deck_1.origin_y + deck_1.y - deck_2.origin_y,
+                                                 deck_1.origin_x, deck_2.origin_y, )
+                                new_deck3 = Deck(deck_2.x, deck_2.origin_y + deck_2.y - deck_1.y - deck_1.origin_y,
+                                                 deck_2.origin_x, deck_1.origin_y + deck_1.y)
+                                self.decks.remove(deck_1)
+                                self.decks.remove(deck_2)
+                                if (new_deck1.size > 0):
+                                    self.decks.append(new_deck1)
+                                if (new_deck2.size > 0):
+                                    self.decks.append(new_deck2)
+                                if (new_deck3.size > 0):
+                                    self.decks.append(new_deck3)
+                                return 0
+
+                    else:
+                        if deck_2.origin_y + deck_2.y >= deck_1.origin_y and deck_2.origin_x == deck_1.origin_x + deck_1.x and deck_2.origin_y + deck_2.y <= deck_1.origin_y + deck_1.y:
+                            size_of_new_deck = (deck_2.origin_y + deck_2.y - deck_1.origin_y) * (deck_1.x + deck_2.x)
+                            if size_of_new_deck > deck_1.size and size_of_new_deck > deck_2.size:
+                                new_deck1 = Deck(deck_2.x, deck_1.origin_y - deck_2.origin_y, deck_2.origin_x,
+                                                 deck_2.origin_y)
+                                new_deck2 = Deck(deck_1.x + deck_2.x, deck_2.origin_y + deck_2.y - deck_1.origin_y,
+                                                 deck_1.origin_x, deck_2.origin_y, )
+                                new_deck3 = Deck(deck_1.x, deck_1.origin_y + deck_1.y - deck_2.y - deck_2.origin_y,
+                                                 deck_1.origin_x, deck_2.origin_y + deck_2.y)
+                                self.decks.remove(deck_1)
+                                self.decks.remove(deck_2)
+                                if (new_deck1.size > 0):
+                                    self.decks.append(new_deck1)
+                                if (new_deck2.size > 0):
+                                    self.decks.append(new_deck2)
+                                if (new_deck3.size > 0):
+                                    self.decks.append(new_deck3)
+                                return 0
+
+        return 1
+
 
     def load_container(self, container):
         loaded = 0
@@ -110,13 +171,21 @@ class Ship:
 
     def display_ship(self):
         pygame.init()
-        screen = pygame.display.set_mode((self.x, self.y + math.floor(300 / 700 * self.y)))
-        font_size = 10
+        monitor_fullness = 0.95
+        monitor_h = pygame.display.Info().current_h
+
+        scale = monitor_fullness / ((self.y + math.floor(300 / 700 * self.y)) / monitor_h)
+
+        screen = pygame.display.set_mode(
+            (math.floor(scale * self.x), math.floor(scale * (self.y + math.floor(300 / 700 * self.y)))))
+        font_size = math.floor(scale * 10)
+
         myfont = pygame.font.SysFont("monospace", font_size)
         clock = pygame.time.Clock()
         background = pygame.image.load("background.jpg").convert()
         background = pygame.transform.rotate(background, 90)
-        background = pygame.transform.scale(background, [self.x, self.y + math.floor(300 / 700 * self.y)])
+        background = pygame.transform.scale(background, [math.floor(scale * self.x),
+                                                         math.floor(scale * (self.y + math.floor(300 / 700 * self.y)))])
         running = True
         pygame.display.set_caption('SHIP ID - ' + str(self.ID))
 
@@ -141,8 +210,10 @@ class Ship:
                     COLOR = [0, color_loop, 0]
                 else:
                     COLOR = [0, 0, color_loop]
-                pygame.draw.rect(screen, COLOR, [container.position_x, container.position_y + math.floor(
-                    220 / 1011 * (self.y + math.floor(300 / 700 * self.y))), container.x, container.y],
+                pygame.draw.rect(screen, COLOR, [math.floor(scale * container.position_x),
+                                                 math.floor(scale * (container.position_y + math.floor(
+                                                     220 / 1011 * (self.y + math.floor(300 / 700 * self.y))))),
+                                                 math.floor(scale * container.x), math.floor(scale * container.y)],
                                  0)
                 color_loop = color_loop + 10
                 color = color + 1
@@ -158,19 +229,25 @@ class Ship:
                     str(container.timestamp.month) + "-" + str(container.timestamp.day) + "-" + str(
                         container.timestamp.year), 1, (0, 0, 0))
                 if container.y > container.x:
-                    screen.blit(label_ID, (container.position_x, container.position_y + math.floor(
-                        220 / 1011 * (self.y + math.floor(300 / 700 * self.y)))))
-                    screen.blit(label_month, (container.position_x, container.position_y + font_size + math.floor(
-                        220 / 1011 * (self.y + math.floor(300 / 700 * self.y)))))
-                    screen.blit(label_day, (container.position_x, container.position_y + 2 * font_size + math.floor(
-                        220 / 1011 * (self.y + math.floor(300 / 700 * self.y)))))
-                    screen.blit(label_year, (container.position_x, container.position_y + 3 * font_size + math.floor(
-                        220 / 1011 * (self.y + math.floor(300 / 700 * self.y)))))
+                    screen.blit(label_ID, (
+                    math.floor(scale * container.position_x), math.floor(scale * (container.position_y + math.floor(
+                        220 / 1011 * (self.y + math.floor(300 / 700 * self.y)))))))
+                    screen.blit(label_month, (math.floor(scale * container.position_x),
+                                              math.floor(scale * (container.position_y + font_size + math.floor(
+                                                  220 / 1011 * (self.y + math.floor(300 / 700 * self.y)))))))
+                    screen.blit(label_day, (math.floor(scale * container.position_x),
+                                            math.floor(scale * (container.position_y + 2 * font_size + math.floor(
+                                                220 / 1011 * (self.y + math.floor(300 / 700 * self.y)))))))
+                    screen.blit(label_year, (math.floor(scale * container.position_x),
+                                             math.floor(scale * (container.position_y + 3 * font_size + math.floor(
+                                                 220 / 1011 * (self.y + math.floor(300 / 700 * self.y)))))))
                 else:
-                    screen.blit(label_ID, (container.position_x, container.position_y + math.floor(
-                        220 / 1011 * (self.y + math.floor(300 / 700 * self.y)))))
-                    screen.blit(label_one_line, (container.position_x, container.position_y + font_size + math.floor(
-                        220 / 1011 * (self.y + math.floor(300 / 700 * self.y)))))
+                    screen.blit(label_ID, (
+                    math.floor(scale * container.position_x), math.floor(scale * (container.position_y + math.floor(
+                        220 / 1011 * (self.y + math.floor(300 / 700 * self.y)))))))
+                    screen.blit(label_one_line, (math.floor(scale * container.position_x),
+                                                 math.floor(scale * (container.position_y + font_size + math.floor(
+                                                     220 / 1011 * (self.y + math.floor(300 / 700 * self.y)))))))
 
 
 
@@ -185,6 +262,7 @@ class Deck:
         self.y = _y
         self.origin_x = _origin_x
         self.origin_y = _origin_y
+        self.size = self.x * self.y
 
 
 class Container:
@@ -204,7 +282,8 @@ class Container:
         print(str(self.timestamp.month) + "-" + str(self.timestamp.day) + "-" + str(self.timestamp.year) + "\n")
 
     def get_container_information(self):
-        ID_and_sizes = "Ship ID: " + str(self.ID) + " Sizes(x,y,z): " + str(self.x) + ", " + str(self.y) + ", " + str(
+        ID_and_sizes = "Container ID: " + str(self.ID) + " Sizes(x,y,z): " + str(self.x) + ", " + str(
+            self.y) + ", " + str(
             self.z) + "\n"
         volume = "Volume: " + str(self.volume) + "\n"
         print(ID_and_sizes + volume)

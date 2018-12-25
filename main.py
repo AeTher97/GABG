@@ -20,7 +20,6 @@ from RandomGenerators import ContainerGenerator
 
 # for ship in ports[0].ships:
 # ship.display_ship()
-
 ports = FileExchange.LoadAllDataFromFile('ExampleContainerList.txt')
 ports[0].load_ship(1)
 ports[0].load_ship(2)
@@ -32,7 +31,8 @@ for ship in ports[0].ships:
     ship.display_ship()
 for ship in ports[1].ships:
     ship.display_ship()
+print(len(ports[1].ships[1].containers))
 
 # FileExchange.SaveShip('ExampleShip.txt',ports[0].ships[0])
-if (FileExchange.LoadShipFromFile('ExampleShip.txt') != None):
-    FileExchange.LoadShipFromFile('ExampleShip.txt').display_ship()
+# if (FileExchange.LoadShipFromFile('ExampleShip.txt') != None):
+#   FileExchange.LoadShipFromFile('ExampleShip.txt').display_ship()
