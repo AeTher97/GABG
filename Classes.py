@@ -22,7 +22,7 @@ class ShipLoader:
 
         for i in range(0, len(ship.decks)):
             ship.merge_deck()
-
+        print("merge decks used \n")
         containers_to_remove = []
         for contain in container_list:
             if (ship.load_container(contain) == 0):
@@ -85,7 +85,7 @@ class Ship:
                                 new_deck1 = Deck(deck_2.x, deck_1.origin_y - deck_2.origin_y, deck_2.origin_x,
                                                  deck_2.origin_y)
                                 new_deck2 = Deck(deck_1.x + deck_2.x, deck_2.origin_y + deck_2.y - deck_1.origin_y,
-                                                 deck_1.origin_x, deck_2.origin_y, )
+                                                 deck_1.origin_x, deck_1.origin_y)
                                 new_deck3 = Deck(deck_1.x, deck_1.origin_y + deck_1.y - deck_2.y - deck_2.origin_y,
                                                  deck_1.origin_x, deck_2.origin_y + deck_2.y)
                                 self.decks.remove(deck_1)
@@ -157,14 +157,18 @@ class Ship:
             new_deck3 = Deck(deck.x - container.x, deck.y - container.y, deck.origin_x + container.x,
                              deck.origin_y + container.y)
             self.decks.remove(deck)
-            self.decks.append(new_deck2)
-            self.decks.append(new_deck1)
-            self.decks.append(new_deck3)
+            if (new_deck2.size > 0):
+                self.decks.append(new_deck2)
+            if (new_deck1.size > 0):
+                self.decks.append(new_deck1)
+            if (new_deck3.size > 0):
+                self.decks.append(new_deck3)
             container.position_x = deck.origin_x
             container.position_y = deck.origin_y
             self.containers.append(container)
             self.current_volume = self.current_volume - container.volume
             self.current_capacity = self.current_capacity -1
+
             return 0
         else:
             return 1
