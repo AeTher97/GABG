@@ -7,15 +7,17 @@ from RandomGenerators import ContainerGenerator
 ship = Ship(1, 250, 900, 10, 150)
 ports = FileExchange.LoadAllDataFromFile('ExampleContainerList.txt')
 
-ports[0].load_ship(1, 2, True)
-ports[0].load_ship(2, 2, True)
+not_resolved_ports = 0
+for port in ports:
+    not_resolved_ports = not_resolved_ports + port.not_resolved
+while not_resolved_ports > 0:
+    not_resolved_ports = 0
+    for port in ports:
+        not_resolved_ports = not_resolved_ports + port.not_resolved
+    for port in ports:
+        port.resolve_port()
 
-ports[0].ships[0].display_ship()
-ports[0].ships[1].display_ship()
-
+FileExchange.SaveAllDataToFile('result.txt', ports)
 print(str(len(ports[0].containers)) + " containers left in port 1\n")
 print(str(len(ports[1].containers)) + " containers left in port 2\n")
 
-# FileExchange.SaveShip('ExampleShip.txt',ports[0].ships[0])
-# if (FileExchange.LoadShipFromFile('ExampleShip.txt') != None):
-#   FileExchange.LoadShipFromFile('ExampleShip.txt').display_ship()

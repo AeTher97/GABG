@@ -9,15 +9,15 @@ BASE_COLOR = {0, 0, 0}
 
 class ShipLoader:
     @staticmethod
-    def Load_ship(ship, container_list, merges_number, by_date):
-        if (by_date == True):
+    def LoadShip(ship, container_list, merges_number, by_date):
+        if by_date:
             container_list.sort(key=lambda x: x.timestamp.date_to_number_of_days(), reverse=False)
-        if (by_date == False):
+        if not by_date:
             container_list.sort(key=lambda x: x.volume, reverse=True)
 
         containers_to_remove = []
         for contain in container_list:
-            if (ship.load_container(contain) == 0):
+            if ship.load_container(contain) == 0:
                 containers_to_remove.append(contain)
 
         for contain in containers_to_remove:
@@ -30,24 +30,23 @@ class ShipLoader:
 
             containers_to_remove = []
             for contain in container_list:
-                if (ship.load_container(contain) == 0):
+                if ship.load_container(contain) == 0:
                     containers_to_remove.append(contain)
 
             for contain in containers_to_remove:
                 container_list.remove(contain)
-
-
-
 
         if len(container_list) == 0:
             print("loaded all the containers")
         else:
             print("couldn't load all the containers")
 
+        return ship.containers
+
 
 class Ship:
-    def __init__(self, _ID, _x, _y, _z, _capacity):
-        self.ID = _ID
+    def __init__(self, _id, _x, _y, _z, _capacity):
+        self.ID = _id
         self.x = _x
         self.y = _y
         self.z = _z
@@ -57,10 +56,17 @@ class Ship:
         self.current_volume = self.volume
         self.containers = []
         self.decks = []
-        self.decks.append(Deck(_x, _y, 0, 0))
+        self.decks.append(Deck(self.x, self.y, 0, 0))
+
+    def reset(self):
+        self.current_capacity = self.capacity
+        self.current_volume = self.volume
+        for deck in self.decks:
+            self.decks.remove(deck)
+        self.decks = []
+        self.decks.append(Deck(self.x, self.y, 0, 0))
 
     def merge_deck(self):
-        merged = 0
         for deck_1 in self.decks:
             for deck_2 in self.decks:
                 if deck_1 != deck_2:
@@ -77,11 +83,11 @@ class Ship:
                                                  deck_2.origin_x, deck_1.origin_y + deck_1.y)
                                 self.decks.remove(deck_1)
                                 self.decks.remove(deck_2)
-                                if (new_deck1.size > 0):
+                                if new_deck1.size > 0:
                                     self.decks.append(new_deck1)
-                                if (new_deck2.size > 0):
+                                if new_deck2.size > 0:
                                     self.decks.append(new_deck2)
-                                if (new_deck3.size > 0):
+                                if new_deck3.size > 0:
                                     self.decks.append(new_deck3)
                                 return 0
 
@@ -97,29 +103,28 @@ class Ship:
                                                  deck_1.origin_x, deck_2.origin_y + deck_2.y)
                                 self.decks.remove(deck_1)
                                 self.decks.remove(deck_2)
-                                if (new_deck1.size > 0):
+                                if new_deck1.size > 0:
                                     self.decks.append(new_deck1)
-                                if (new_deck2.size > 0):
+                                if new_deck2.size > 0:
                                     self.decks.append(new_deck2)
-                                if (new_deck3.size > 0):
+                                if new_deck3.size > 0:
                                     self.decks.append(new_deck3)
                                 return 0
 
         return 1
 
-
     def load_container(self, container):
         loaded = 0
         for deck in self.decks:
             if loaded == 0:
-                if (self.load_container_on_deck(deck, container) == 0):
-                    loaded = 1;
+                if self.load_container_on_deck(deck, container) == 0:
+                    loaded = 1
 
         if loaded == 1:
-            # print("container loaded sucesfully \n")
+            # print("container loaded successfully \n")
             return 0
         else:
-            #print("cannot load the container \n")
+            # print("cannot load the container \n")
             return 1
 
     def send_ship(self):
@@ -128,35 +133,34 @@ class Ship:
 
     def unload_ship(self):
         unloaded_containers = self.containers
-        self.containers.clear()
+        self.containers = []
         self.current_volume = self.volume
 
         return unloaded_containers
 
     def get_ship_information(self):
 
-        ID_and_sizes = "Ship ID: " + str(self.ID) + " Sizes(x,y,z): " + str(self.x) + ", " + str(self.y) + ", " + str(
+        id_and_sizes = "Ship ID: " + str(self.ID) + " Sizes(x,y,z): " + str(self.x) + ", " + str(self.y) + ", " + str(
             self.z) + "\n"
         capacity_volume_current_capacity_volume = "Capacity: " + str(self.capacity) + " Volume: " + str(
             self.volume) + " Current Capacity: " + str(self.current_capacity) + " Current Volume: " + str(
             self.current_volume) + "\n"
-        print(ID_and_sizes + capacity_volume_current_capacity_volume)
-        return (ID_and_sizes + capacity_volume_current_capacity_volume)
-
+        print(id_and_sizes + capacity_volume_current_capacity_volume)
+        return id_and_sizes + capacity_volume_current_capacity_volume
 
     def load_container_on_deck(self, deck, container):
         if self.current_capacity == 0:
             print("Ship is full(capacity left = 0")
             return 1
-        if (container.x <= deck.x and container.y <= deck.y):
-            load = 1;
-        elif (container.y <= deck.x and container.x <= deck.y):
+        if container.x <= deck.x and container.y <= deck.y:
+            load = 1
+        elif container.y <= deck.x and container.x <= deck.y:
             temp = container.x
             container.x = container.y
             container.y = temp
-            load = 1;
+            load = 1
         else:
-            load = 0;
+            load = 0
 
         if load == 1:
             new_deck1 = Deck(deck.x - container.x, container.y, deck.origin_x + container.x, deck.origin_y)
@@ -164,23 +168,23 @@ class Ship:
             new_deck3 = Deck(deck.x - container.x, deck.y - container.y, deck.origin_x + container.x,
                              deck.origin_y + container.y)
             self.decks.remove(deck)
-            if (new_deck2.size > 0):
+            if new_deck2.size > 0:
                 self.decks.append(new_deck2)
-            if (new_deck1.size > 0):
+            if new_deck1.size > 0:
                 self.decks.append(new_deck1)
-            if (new_deck3.size > 0):
+            if new_deck3.size > 0:
                 self.decks.append(new_deck3)
             container.position_x = deck.origin_x
             container.position_y = deck.origin_y
             self.containers.append(container)
             self.current_volume = self.current_volume - container.volume
-            self.current_capacity = self.current_capacity -1
+            self.current_capacity = self.current_capacity - 1
 
             return 0
         else:
             return 1
 
-    def display_ship(self):
+    def display_ship(self, current_destination):
         pygame.init()
         monitor_fullness = 0.95
         monitor_h = pygame.display.Info().current_h
@@ -198,7 +202,8 @@ class Ship:
         background = pygame.transform.scale(background, [math.floor(scale * self.x),
                                                          math.floor(scale * (self.y + math.floor(300 / 700 * self.y)))])
         running = True
-        pygame.display.set_caption('SHIP ID - ' + str(self.ID))
+        pygame.display.set_caption(
+            str(self.ID) + " Destination " + str(current_destination) + "->" + str(self.containers[0].destination))
 
         # main loop
         while running:
@@ -216,15 +221,16 @@ class Ship:
             for container in self.containers:
 
                 if color == 1:
-                    COLOR = [color_loop, 0, 0]
+                    color_to_print = [color_loop, 0, 0]
                 elif color == 2:
-                    COLOR = [0, color_loop, 0]
+                    color_to_print = [0, color_loop, 0]
                 else:
-                    COLOR = [0, 0, color_loop]
-                pygame.draw.rect(screen, COLOR, [math.floor(scale * container.position_x),
-                                                 math.floor(scale * (container.position_y + math.floor(
-                                                     220 / 1011 * (self.y + math.floor(300 / 700 * self.y))))),
-                                                 math.floor(scale * container.x), math.floor(scale * container.y)],
+                    color_to_print = [0, 0, color_loop]
+                pygame.draw.rect(screen, color_to_print, [math.floor(scale * container.position_x),
+                                                          math.floor(scale * (container.position_y + math.floor(
+                                                              220 / 1011 * (self.y + math.floor(300 / 700 * self.y))))),
+                                                          math.floor(scale * container.x),
+                                                          math.floor(scale * container.y)],
                                  0)
                 color_loop = color_loop + 10
                 color = color + 1
@@ -232,7 +238,7 @@ class Ship:
                     color_loop = 100
                 if color == 4:
                     color = 1
-                label_ID = myfont.render(str(container.ID), 1, (0, 0, 0))
+                label_id = myfont.render(str(container.ID), 1, (0, 0, 0))
                 label_month = myfont.render(str(container.timestamp.month), 1, (0, 0, 0))
                 label_day = myfont.render(str(container.timestamp.day), 1, (0, 0, 0))
                 label_year = myfont.render(str(container.timestamp.year), 1, (0, 0, 0))
@@ -240,9 +246,9 @@ class Ship:
                     str(container.timestamp.month) + "-" + str(container.timestamp.day) + "-" + str(
                         container.timestamp.year), 1, (0, 0, 0))
                 if container.y > container.x:
-                    screen.blit(label_ID, (
-                    math.floor(scale * container.position_x), math.floor(scale * (container.position_y + math.floor(
-                        220 / 1011 * (self.y + math.floor(300 / 700 * self.y)))))))
+                    screen.blit(label_id, (
+                        math.floor(scale * container.position_x), math.floor(scale * (container.position_y + math.floor(
+                            220 / 1011 * (self.y + math.floor(300 / 700 * self.y)))))))
                     screen.blit(label_month, (math.floor(scale * container.position_x),
                                               math.floor(scale * (container.position_y + font_size + math.floor(
                                                   220 / 1011 * (self.y + math.floor(300 / 700 * self.y)))))))
@@ -253,14 +259,12 @@ class Ship:
                                              math.floor(scale * (container.position_y + 3 * font_size + math.floor(
                                                  220 / 1011 * (self.y + math.floor(300 / 700 * self.y)))))))
                 else:
-                    screen.blit(label_ID, (
-                    math.floor(scale * container.position_x), math.floor(scale * (container.position_y + math.floor(
-                        220 / 1011 * (self.y + math.floor(300 / 700 * self.y)))))))
+                    screen.blit(label_id, (
+                        math.floor(scale * container.position_x), math.floor(scale * (container.position_y + math.floor(
+                            220 / 1011 * (self.y + math.floor(300 / 700 * self.y)))))))
                     screen.blit(label_one_line, (math.floor(scale * container.position_x),
                                                  math.floor(scale * (container.position_y + font_size + math.floor(
                                                      220 / 1011 * (self.y + math.floor(300 / 700 * self.y)))))))
-
-
 
             pygame.display.flip()
 
@@ -277,13 +281,13 @@ class Deck:
 
 
 class Container:
-    def __init__(self, _ID, _x, _y, _z, _timestamp, _destination):
+    def __init__(self, _id, _x, _y, _z, _timestamp, _destination):
         self.timestamp = _timestamp
         self.x = _x
         self.y = _y
         self.z = _z
         self.volume = self.x * self.y * self.z
-        self.ID = _ID
+        self.ID = _id
         self.mass = self.x * self.y * self.z * 1000
         self.position_x = 0
         self.position_y = 0
@@ -293,12 +297,13 @@ class Container:
         print(str(self.timestamp.month) + "-" + str(self.timestamp.day) + "-" + str(self.timestamp.year) + "\n")
 
     def get_container_information(self):
-        ID_and_sizes = "Container ID: " + str(self.ID) + " Sizes(x,y,z): " + str(self.x) + ", " + str(
+        id_and_sizes = "Container ID: " + str(self.ID) + " Sizes(x,y,z): " + str(self.x) + ", " + str(
             self.y) + ", " + str(
             self.z) + "\n"
         volume = "Volume: " + str(self.volume) + "\n"
-        print(ID_and_sizes + volume)
-        return (ID_and_sizes + volume)
+        print(id_and_sizes + volume)
+        return id_and_sizes + volume
+
 
 class Timestamp:
     def __init__(self, _month, _day, _year):
@@ -310,30 +315,110 @@ class Timestamp:
         return self.year * 365 + self.month * 31 + self.day
 
     def get_string(self):
-        return (str(self.month) + "-" + str(self.day) + "-" + str(self.year))
-
-
+        return str(self.month) + "-" + str(self.day) + "-" + str(self.year)
 
 
 class Port:
-    def __init__(self, _ID, _ship_capacity):
+    def __init__(self, _id, _ship_capacity, ):
+        self.ships_send = 0;
+        self.not_resolved = 1
+        self.ports_list = []
         self.containers = []
-        self.ID = _ID
+        self.ID = _id
         self.ship_capacity = _ship_capacity
         self.ships = []
+        self.destination_list = []
+        self.containers_with_destination = []
+
+    def resolve_port(self):
+        self.create_destination_list()
+        containers_to_remove = []
+        ships_to_send = []
+        for destination in self.containers_with_destination:
+            if len(self.ships) > 0:
+                for ship in self.ships:
+                    containers_to_remove = self.load_ship(ship.ID, destination, 2, True)
+                    if len(containers_to_remove) > 0:
+                        ships_to_send.append(ship)
+                    for container in containers_to_remove:
+                        if container in self.containers:
+                            self.containers.remove(container)
+                    if len(destination) == 0 and destination in self.containers_with_destination:
+                        self.containers_with_destination.remove(destination)
+
+                for ship in ships_to_send:
+                    print("sending ship" + str(ship.ID))
+                    ship.display_ship(self.ID)
+                    self.send_ship(ship.ID, ship.containers[0].destination)
+                for ship in ships_to_send:
+                    self.undock_ship(ship)
+            else:
+                self.request_ship()
+
+        self.create_destination_list()
+        if len(self.containers_with_destination) == 0:
+            self.not_resolved = 0
+        return 0
+
+    def request_ship(self):
+        for port in self.ports_list:
+            if port != self:
+                port.create_destination_list()
+                if len(port.containers_with_destination) == 0 and len(port.ships) > 0:
+                    port.send_ship(port.ships[0].ID, self.ID)
+                    port.undock_ship(port.ships[0])
+        print("cos")
+
+    def create_destination_list(self):
+        self.destination_list = []
+        self.containers_with_destination = []
+        for container in self.containers:
+            if not container.destination in self.destination_list and container.destination != self.ID:
+                self.destination_list.append(container.destination)
+
+        for destination in self.destination_list:
+            containers_to_destination = []
+            for container in self.containers:
+                if container.destination == destination:
+                    containers_to_destination.append(container)
+            self.containers_with_destination.append(containers_to_destination)
+
+        self.containers_with_destination.sort(key=lambda x: len(x), reverse=True)
 
     def add_ship(self, ship):
         self.ships.append(ship)
 
-    def add_conatiner(self, container):
+    def add_container(self, container):
         self.containers.append(container)
 
     def send_ship(self, ship_id, dest_port_id):
-        # TODO
-        print("lolz")
+        for x in self.ports_list:
+            if x.ID == dest_port_id:
+                for y in self.ships:
+                    if y.ID == ship_id:
+                        trip_number = 0
+                        for port in self.ports_list:
+                            trip_number = trip_number + port.ships_send
+                        GenerateSendReport("", y, self.ID, dest_port_id, trip_number)
+                        print("docking ship" + str(y.ID))
+                        x.dock_ship(y)
+                        self.ships_send = self.ships_send + 1
+
+    def unload_ship(self, ship):
+        containers_to_remove = []
+        for container in ship.containers:
+            containers_to_remove.append(container)
+            self.containers.append(container)
+        for container in containers_to_remove:
+            ship.containers.remove(container)
+        ship.reset()
+
+    def undock_ship(self, ship):
+        self.ships.remove(ship)
 
     def dock_ship(self, ship):
         if len(self.ships) < self.ship_capacity:
+            self.unload_ship(ship)
             self.add_ship(ship)
             return 0
         else:
@@ -342,13 +427,31 @@ class Port:
     def get_ships(self):
         return self.ships
 
-    def load_ship(self, ship_id, merges_number, by_date):
+    def load_ship(self, ship_id, container_list, merges_number, by_date):
         for x in self.ships:
             if x.ID == ship_id:
-                ShipLoader.Load_ship(x, self.containers, merges_number, by_date)
+                loaded_containers = ShipLoader.LoadShip(x, container_list, merges_number, by_date)
                 print("loaded ship")
-                break
+                return loaded_containers
         else:
-            x = None
             print("couldn't find ship")
             return 1
+
+
+def GenerateSendReport(path, ship, current_location, destination, travel_number):
+    path = path + "Travel " + str(travel_number + 1)
+    file = open(path, 'w')
+    file.write('Travel number: ' + str(travel_number + 1) + " From port: " + str(current_location) + " To port: " + str(
+        destination))
+    string = " Ship ID: " + str(ship.ID) + " X: " + str(ship.x) + " Y: " + str(ship.y) + " Z: " + str(
+        ship.z) + " Capacity: " + str(ship.capacity) + " Number of containers: " + str(len(ship.containers)) + '\n'
+    file.write(string)
+    for container in ship.containers:
+        string2 = "Container ID: " + str(container.ID) + " X: " + str(container.x) + " Y: " + str(
+            container.y) + " Z: " + str(
+            container.z) + " Position X: " + str(container.position_x) + " Position Y: " + str(
+            container.position_y) + " Timestamp:" + container.timestamp.get_string() + " DestinationID: " + str(
+            container.destination) + "\n"
+        string = string + string2
+        file.write(string2)
+    file.write('\n')

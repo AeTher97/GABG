@@ -1,14 +1,13 @@
-Port 1 Capacity: 3
+Port 1 Capacity: 4
 Ships:
-Ship ID: 1 X: 200 Y: 500 Z: 10 Capacity: 100
 Ship ID: 2 X: 200 Y: 600 Z: 10 Capacity: 100
 Containers:
-Container ID: 140 X: 30 Y: 65 Z: 10 Timestamp:1-5-2019 DestinationID: 2
-Container ID: 142 X: 27 Y: 59 Z: 10 Timestamp:1-8-2019 DestinationID: 2
-Container ID: 162 X: 27 Y: 58 Z: 10 Timestamp:1-20-2019 DestinationID: 2
-Container ID: 101 X: 32 Y: 70 Z: 10 Timestamp:1-30-2019 DestinationID: 2
-Container ID: 193 X: 32 Y: 70 Z: 10 Timestamp:2-6-2019 DestinationID: 2
-Container ID: 176 X: 30 Y: 66 Z: 10 Timestamp:3-11-2019 DestinationID: 2
+Container ID: 140 X: 30 Y: 65 Z: 10 Timestamp:1-5-2019 DestinationID: 1
+Container ID: 142 X: 27 Y: 59 Z: 10 Timestamp:1-8-2019 DestinationID: 1
+Container ID: 162 X: 27 Y: 58 Z: 10 Timestamp:1-20-2019 DestinationID: 1
+Container ID: 101 X: 32 Y: 70 Z: 10 Timestamp:1-30-2019 DestinationID: 1
+Container ID: 193 X: 32 Y: 70 Z: 10 Timestamp:2-6-2019 DestinationID: 1
+Container ID: 176 X: 30 Y: 66 Z: 10 Timestamp:3-11-2019 DestinationID: 1
 Container ID: 187 X: 31 Y: 68 Z: 10 Timestamp:3-24-2019 DestinationID: 2
 Container ID: 127 X: 29 Y: 63 Z: 10 Timestamp:3-29-2019 DestinationID: 2
 Container ID: 117 X: 27 Y: 58 Z: 10 Timestamp:4-7-2019 DestinationID: 2
@@ -106,7 +105,6 @@ Container ID: 165 X: 27 Y: 58 Z: 10 Timestamp:12-12-2022 DestinationID: 2
 
 Port 2 Capacity: 4
 Ships:
-Ship ID: 3 X: 200 Y: 550 Z: 10 Capacity: 100
 Ship ID: 4 X: 220 Y: 700 Z: 10 Capacity: 100
 Containers:
 Container ID: 326 X: 33 Y: 71 Z: 10 Timestamp:1-26-2019 DestinationID: 1

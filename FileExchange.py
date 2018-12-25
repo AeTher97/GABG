@@ -3,6 +3,7 @@ import pandas as pd
 from Classes import Port, Ship, Container, Timestamp
 
 
+
 def ParseLine(line, rx):
     for key, rx in rx.items():
         match = rx.search(line)
@@ -64,11 +65,16 @@ class FileExchange:
                             #    z) + " Date: " + str(month) + "-" + str(day) + "-" + str(year) + " Destination: " + str(
                             #    destination))
                             container_object = Container(container, x, y, z, timestamp, destination)
-                            port_object.add_conatiner(container_object)
+                            port_object.add_container(container_object)
                         line = file_object.readline()
 
                     port_list.append(port_object)
                 line = file_object.readline()
+        for port in port_list:
+            handles_list = port_list
+            # handles_list.remove(port)
+            port.ports_list = handles_list
+
         if (port_list != None):
             print("\nSucesfully loaded " + str(len(port_list)) + " ports from file\n")
             for port in port_list:
@@ -97,15 +103,19 @@ class FileExchange:
     @staticmethod
     def SaveShip(path, ship):
         file = open(path, 'w')
-        file.write("Ship ID: " + str(ship.ID) + " X: " + str(ship.x) + " Y: " + str(ship.y) + " Z: " + str(
-            ship.z) + " Capacity: " + str(ship.capacity) + " Number of containers: " + str(len(ship.containers)) + '\n')
+        string = "Ship ID: " + str(ship.ID) + " X: " + str(ship.x) + " Y: " + str(ship.y) + " Z: " + str(
+            ship.z) + " Capacity: " + str(ship.capacity) + " Number of containers: " + str(len(ship.containers)) + '\n'
+        file.write(string)
         for container in ship.containers:
-            file.write("Container ID: " + str(container.ID) + " X: " + str(container.x) + " Y: " + str(
+            string2 = "Container ID: " + str(container.ID) + " X: " + str(container.x) + " Y: " + str(
                 container.y) + " Z: " + str(
                 container.z) + " Position X: " + str(container.position_x) + " Position Y: " + str(
                 container.position_y) + " Timestamp:" + container.timestamp.get_string() + " DestinationID: " + str(
-                container.destination) + "\n")
+                container.destination) + "\n"
+            string = string + string2
+            file.write(string2)
         file.write('\n')
+        return string
 
     @staticmethod
     def LoadShipFromFile(path):
