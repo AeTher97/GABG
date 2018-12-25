@@ -10,7 +10,7 @@ BASE_COLOR = {0, 0, 0}
 class ShipLoader:
     @staticmethod
     def Load_ship(ship, container_list):
-        container_list.sort(key=lambda x: x.mass, reverse=True)
+        container_list.sort(key=lambda x: x.timestamp.date_to_number_of_days(), reverse=False)
 
         containers_to_remove = []
         for contain in container_list:
@@ -27,14 +27,14 @@ class ShipLoader:
 
 
 class Ship:
-    def __init__(self, _ID, _x, _y, _z, capacity):
+    def __init__(self, _ID, _x, _y, _z, _capacity):
         self.ID = _ID
         self.x = _x
         self.y = _y
         self.z = _z
-        self.capacity = self.x * self.y * self.z
+        self.capacity = _capacity
         self.volume = self.x * self.y * self.z
-        self.current_capacity = capacity
+        self.current_capacity = _capacity
         self.current_volume = self.volume
         self.containers = []
         self.decks = []
@@ -108,7 +108,8 @@ class Ship:
     def display_ship(self):
         pygame.init()
         screen = pygame.display.set_mode((self.x, self.y + math.floor(300 / 700 * self.y)))
-
+        font_size = 10
+        myfont = pygame.font.SysFont("monospace", font_size)
         clock = pygame.time.Clock()
         background = pygame.image.load("background.jpg").convert()
         background = pygame.transform.rotate(background, 90)
@@ -146,6 +147,18 @@ class Ship:
                     color_loop = 100
                 if color == 4:
                     color = 1
+                label_ID = myfont.render(str(container.ID), 1, (0, 0, 0))
+                label_month = myfont.render(str(container.timestamp.month), 1, (0, 0, 0))
+                label_day = myfont.render(str(container.timestamp.day), 1, (0, 0, 0))
+                label_year = myfont.render(str(container.timestamp.year), 1, (0, 0, 0))
+                screen.blit(label_ID, (container.position_x, container.position_y + math.floor(
+                    220 / 1011 * (self.y + math.floor(300 / 700 * self.y)))))
+                screen.blit(label_month, (container.position_x, container.position_y + font_size + math.floor(
+                    220 / 1011 * (self.y + math.floor(300 / 700 * self.y)))))
+                screen.blit(label_day, (container.position_x, container.position_y + 2 * font_size + math.floor(
+                    220 / 1011 * (self.y + math.floor(300 / 700 * self.y)))))
+                screen.blit(label_year, (container.position_x, container.position_y + 3 * font_size + math.floor(
+                    220 / 1011 * (self.y + math.floor(300 / 700 * self.y)))))
 
             pygame.display.flip()
 
@@ -173,6 +186,15 @@ class Container:
         self.position_y = 0
         self.destination = _destination
 
+    def show_timestamp(self):
+        print(str(self.timestamp.month) + "-" + str(self.timestamp.day) + "-" + str(self.timestamp.year) + "\n")
+
+    def get_container_information(self):
+        ID_and_sizes = "Ship ID: " + str(self.ID) + " Sizes(x,y,z): " + str(self.x) + ", " + str(self.y) + ", " + str(
+            self.z) + "\n"
+        volume = "Volume: " + str(self.volume) + "\n"
+        print(ID_and_sizes + volume)
+        return (ID_and_sizes + volume)
 
 class Timestamp:
     def __init__(self, _month, _day, _year):
@@ -183,12 +205,10 @@ class Timestamp:
     def date_to_number_of_days(self):
         return self.year * 365 + self.month * 31 + self.day
 
-    def get_container_information(self):
-        ID_and_sizes = "Ship ID: " + str(self.ID) + " Sizes(x,y,z): " + str(self.x) + ", " + str(self.y) + ", " + str(
-            self.z) + "\n"
-        volume = "Volume: " + str(self.volume) + "\n"
-        print(ID_and_sizes + volume)
-        return (ID_and_sizes + volume)
+    def get_string(self):
+        return (str(self.month) + "-" + str(self.day) + "-" + str(self.year))
+
+
 
 
 class Port:

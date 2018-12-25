@@ -73,5 +73,23 @@ class FileExchange:
         return port_list
 
     @staticmethod
-    def SaveDataToFile(path):
+    def SaveAllDataToFile(path, port_list):
         file = open(path, "w")
+        for port in port_list:
+            file.write("Port " + str(port.ID) + " Capacity: " + str(port.ship_capacity) + "\n")
+            file.write("Ships:\n")
+            for ship in port.ships:
+                file.write("Ship ID: " + str(ship.ID) + " X: " + str(ship.x) + " Y: " + str(ship.y) + " Z: " + str(
+                    ship.z) + " Capacity: " + str(ship.capacity) + "\n")
+            file.write("Containers:\n")
+            for container in port.containers:
+                file.write("Container ID: " + str(container.ID) + " X: " + str(container.x) + " Y: " + str(
+                    container.y) + " Z: " + str(
+                    container.z) + " Timestamp:" + container.timestamp.get_string() + " DestinationID: " + str(
+                    container.destination) + "\n")
+            file.write("\n")
+
+    @staticmethod
+    def SaveShip(path, ship):
+        print("nic")
+        # TODO

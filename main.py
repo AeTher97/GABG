@@ -14,12 +14,14 @@ from RandomGenerators import ContainerGenerator
 
 # ShipLoader.Load_ship(ship, container_list)
 # print("number of containers to load " + str(len(container_list)) + "\n")
-##ship.display_ship()
+# ship.display_ship()
 # ship.get_ship_information()
 
 ports = FileExchange.LoadContainersFromFile('ExampleContainerList.txt')
 ports[0].load_ship(1)
 ports[0].load_ship(2)
+print(str(len(ports[0].containers)) + " containers left \n")
 for ship in ports[0].ships:
     ship.display_ship()
-print()
+# for ship in ports[0].ships:
+# ship.display_ship()
