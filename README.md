@@ -6,3 +6,7 @@ To install pygame on Windows use:
 ```
 C:\pip install pygame
 ```
+To solve transportation problem use function:
+```
+ship_containers('ExampleContainerList.txt', 'ExampleResults.txt',GenerateTripReports = True)
+```

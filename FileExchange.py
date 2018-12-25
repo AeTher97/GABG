@@ -181,6 +181,13 @@ class FileExchange:
 
 
 def ship_containers(path, output_path, generate_trip_reports=True):
+    """
+
+    :param path - path to data that requires solving:
+    :param output_path - path to export data:
+    :param generate_trip_reports - boolean to generate_trip_reports:
+    :return:
+    """
     ports = FileExchange.LoadAllDataFromFile(path)
 
     not_resolved_ports = 0
