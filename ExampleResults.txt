@@ -108,10 +108,10 @@ Container ID: 378 X: 30 Y: 66 Z: 10 Timestamp:11-13-2022 DestinationID: 1
 Container ID: 344 X: 33 Y: 71 Z: 10 Timestamp:11-20-2022 DestinationID: 1
 Container ID: 334 X: 27 Y: 59 Z: 10 Timestamp:11-27-2022 DestinationID: 1
 Container ID: 349 X: 33 Y: 71 Z: 10 Timestamp:12-4-2022 DestinationID: 1
+Container ID: 9999 X: 30 Y: 65 Z: 10 Timestamp:1-5-2019 DestinationID: 1
 
 Port 2 Capacity: 4
 Ships:
-Ship ID: 4 X: 220 Y: 700 Z: 10 Capacity: 100
 Containers:
 Container ID: 187 X: 31 Y: 68 Z: 10 Timestamp:3-24-2019 DestinationID: 2
 Container ID: 127 X: 29 Y: 63 Z: 10 Timestamp:3-29-2019 DestinationID: 2
@@ -207,4 +207,9 @@ Container ID: 130 X: 28 Y: 61 Z: 10 Timestamp:11-3-2022 DestinationID: 2
 Container ID: 148 X: 30 Y: 65 Z: 10 Timestamp:11-21-2022 DestinationID: 2
 Container ID: 182 X: 30 Y: 65 Z: 10 Timestamp:11-22-2022 DestinationID: 2
 Container ID: 112 X: 31 Y: 68 Z: 10 Timestamp:11-29-2022 DestinationID: 2
+
+Port 3 Capacity: 2
+Ships:
+Ship ID: 4 X: 220 Y: 700 Z: 10 Capacity: 100
+Containers:
 

@@ -187,7 +187,7 @@ class Ship:
 
     def display_ship(self, current_destination):
         pygame.init()
-        monitor_fullness = 0.95
+        monitor_fullness = 0.8
         monitor_h = pygame.display.Info().current_h
 
         scale = monitor_fullness / ((self.y + math.floor(300 / 700 * self.y)) / monitor_h)
@@ -354,19 +354,19 @@ class Port:
                 for ship in ships_to_send:
                     self.undock_ship(ship)
             else:
-                self.request_ship()
+                self.request_ship(generate_trip_reports)
 
         self.create_destination_list()
         if len(self.containers_with_destination) == 0:
             self.not_resolved = 0
         return 0
 
-    def request_ship(self):
+    def request_ship(self, generate_trip_reports):
         for port in self.ports_list:
             if port != self:
                 port.create_destination_list()
                 if len(port.containers_with_destination) == 0 and len(port.ships) > 0:
-                    port.send_ship(port.ships[0].ID, self.ID)
+                    port.send_ship(port.ships[0].ID, self.ID, generate_trip_reports)
                     port.undock_ship(port.ships[0])
         print("cos")
 
