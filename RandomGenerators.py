@@ -28,3 +28,4 @@ class ContainerGenerator:
         ship_capacity = math.floor(capacity + capacity_deviation_percentage * capacity)
         ship = Ship(ID, ship_size_x, ship_size_y, size_z, ship_capacity)
         return ship
+
