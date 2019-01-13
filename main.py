@@ -1,3 +1,3 @@
 from FileExchange import ship_containers
 
-ship_containers('ExampleContainerList.txt', 'ExampleResults.txt')
+ship_containers('ExampleContainerList.txt', 'ExampleResults.txt',True,True)

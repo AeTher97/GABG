@@ -2,32 +2,18 @@ import pygame
 import datetime
 import math
 
-
 WHITE = (255, 255, 255)
 BASE_COLOR = {0, 0, 0}
 
 
-
 class ShipLoader:
     @staticmethod
-    def LoadShip(ship, container_list, merges_number, by_date):
-        if by_date:
-            container_list.sort(key=lambda x: x.timestamp.date_to_number_of_days(), reverse=False)
-        if not by_date:
-            container_list.sort(key=lambda x: x.volume, reverse=True)
-
-        containers_to_remove = []
-        for contain in container_list:
-            if ship.load_container(contain) == 0:
-                containers_to_remove.append(contain)
-
-        for contain in containers_to_remove:
-            container_list.remove(contain)
-
-        for j in range(0, merges_number):
-            for i in range(0, len(ship.decks)):
-                ship.merge_deck()
-            print("merge decks used \n")
+    def LoadShip(ship, container_list, merges_number, by_date,method = "greedy"):
+        if method == "greedy":
+            if by_date:
+                container_list.sort(key=lambda x: x.timestamp.date_to_number_of_days(), reverse=False)
+            if not by_date:
+                container_list.sort(key=lambda x: x.volume, reverse=True)
 
             containers_to_remove = []
             for contain in container_list:
@@ -37,10 +23,31 @@ class ShipLoader:
             for contain in containers_to_remove:
                 container_list.remove(contain)
 
-        if len(container_list) == 0:
-            print("loaded all the containers")
-        else:
-            print("couldn't load all the containers")
+            for j in range(0, merges_number):
+                for i in range(0, len(ship.decks)):
+                    ship.merge_deck()
+                print("merge decks used \n")
+
+                containers_to_remove = []
+                for contain in container_list:
+                    if ship.load_container(contain) == 0:
+                        containers_to_remove.append(contain)
+
+                for contain in containers_to_remove:
+                    container_list.remove(contain)
+
+            if len(container_list) == 0:
+                print("loaded all the containers")
+            else:
+                print("couldn't load all the containers")
+
+
+        if method == "genetic":
+            if by_date:
+                container_list.sort(key=lambda x: x.timestamp.date_to_number_of_days(), reverse=False)
+            if not by_date:
+                container_list.sort(key=lambda x: x.volume, reverse=True)
+
 
         return ship.containers
 
@@ -58,6 +65,7 @@ class Ship:
         self.containers = []
         self.decks = []
         self.decks.append(Deck(self.x, self.y, 0, 0))
+        self.fuel_consumption = 0
 
     def reset(self):
         self.current_capacity = self.capacity
@@ -66,6 +74,12 @@ class Ship:
             self.decks.remove(deck)
         self.decks = []
         self.decks.append(Deck(self.x, self.y, 0, 0))
+
+    def get_free_space(self):
+        free_space = 0
+        for deck in self.decks:
+            free_space += deck.x * deck.y
+        return free_space
 
     def merge_deck(self):
         for deck_1 in self.decks:
@@ -128,9 +142,6 @@ class Ship:
             # print("cannot load the container \n")
             return 1
 
-    def send_ship(self):
-        # TODO
-        print("chuje wie co tu ma byc")
 
     def unload_ship(self):
         unloaded_containers = self.containers
@@ -321,7 +332,7 @@ class Timestamp:
 
 class Port:
     def __init__(self, _id, _ship_capacity, ):
-        self.ships_send = 0;
+        self.ships_send = 0
         self.not_resolved = 1
         self.ports_list = []
         self.containers = []
@@ -350,11 +361,53 @@ class Port:
                 for ship in ships_to_send:
                     print("sending ship" + str(ship.ID))
                     ship.display_ship(self.ID)
-                    self.send_ship(ship.ID, ship.containers[0].destination, generate_trip_reports)
+                    self.send_ship(self.ships,ship.ID, ship.containers[0].destination, generate_trip_reports,False)
                 for ship in ships_to_send:
                     self.undock_ship(ship)
             else:
                 self.request_ship(generate_trip_reports)
+
+        self.create_destination_list()
+        if len(self.containers_with_destination) == 0:
+            self.not_resolved = 0
+        return 0
+
+    def resolve_port_with_inf_ships(self,generate_trip_reports):
+        self.ships.sort(key=lambda x: x.volume, reverse=False)
+        ships_to_send = []
+        for destination in self.containers_with_destination:
+            while len(destination) > 0:
+                sent = 0
+                for ship in self.ships:
+                    ShipLoader.LoadShip(ship, destination, 2,True)
+                    if len(destination) > 0 and self.ships.index(ship) != len(self.ships) - 1:
+                        destination.extend(ship.containers)
+                        ship.containers.clear()
+                        ship.reset()
+                        continue
+                    if len(destination) > 0 and self.ships.index(ship) == len(self.ships) - 1:
+                        ships_to_send.append(ship)
+                        current_sent_ship = ship
+                        sent = 1
+                    if len(destination) == 0:
+                        self.containers_with_destination.remove(destination)
+                        ships_to_send.append(ship)
+                        current_sent_ship = ship
+                        sent = 1
+                        break
+
+                if sent == 1:
+                    self.ships.append(Ship(current_sent_ship.ID + 100, current_sent_ship.x, current_sent_ship.y, current_sent_ship.z,
+                                      current_sent_ship.capacity))
+                    self.ships.remove(current_sent_ship)
+                self.ships.sort(key=lambda x: x.volume, reverse=False)
+
+            for ship in ships_to_send:
+                for container in ship.containers:
+                    self.containers.remove(container)
+                print("sending ship" + str(ship.ID))
+                ship.display_ship(self.ID)
+                self.send_ship(ships_to_send,ship.ID, ship.containers[0].destination, generate_trip_reports, inf = True)
 
         self.create_destination_list()
         if len(self.containers_with_destination) == 0:
@@ -392,10 +445,10 @@ class Port:
     def add_container(self, container):
         self.containers.append(container)
 
-    def send_ship(self, ship_id, dest_port_id, generate_trip_reports):
+    def send_ship(self,ship_list, ship_id, dest_port_id,generate_trip_reports, inf = True):
         for x in self.ports_list:
             if x.ID == dest_port_id:
-                for y in self.ships:
+                for y in ship_list:
                     if y.ID == ship_id:
                         trip_number = 0
                         for port in self.ports_list:
@@ -403,7 +456,7 @@ class Port:
                         if generate_trip_reports:
                             GenerateSendReport("", y, self.ID, dest_port_id, trip_number)
                         print("docking ship" + str(y.ID))
-                        x.dock_ship(y)
+                        x.dock_ship(y,inf)
                         self.ships_send = self.ships_send + 1
 
     def unload_ship(self, ship):
@@ -418,10 +471,11 @@ class Port:
     def undock_ship(self, ship):
         self.ships.remove(ship)
 
-    def dock_ship(self, ship):
+    def dock_ship(self, ship,inf = True):
         if len(self.ships) < self.ship_capacity:
             self.unload_ship(ship)
-            self.add_ship(ship)
+            if not inf:
+                self.add_ship(ship)
             return 0
         else:
             return 1
