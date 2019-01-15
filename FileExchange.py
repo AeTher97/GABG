@@ -179,7 +179,7 @@ class FileExchange:
             return None
 
 
-def ship_containers(path, output_path, use_inf_ships = True,generate_trip_reports=True):
+def ship_containers(path, output_path, use_inf_ships = True,generate_trip_reports=True,method = "greedy"):
     """
 
     :param path - path to data that requires solving:
@@ -208,7 +208,7 @@ def ship_containers(path, output_path, use_inf_ships = True,generate_trip_report
             for port in ports:
                 not_resolved_ports = not_resolved_ports + port.not_resolved
             for port in ports:
-                port.resolve_port_with_inf_ships(generate_trip_reports)
+                port.resolve_port_with_inf_ships(generate_trip_reports,method)
 
 
     FileExchange.SaveAllDataToFile(output_path, ports)

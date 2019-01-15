@@ -1,3 +1,5 @@
+import random
+
 import pygame
 import datetime
 import math
@@ -41,12 +43,94 @@ class ShipLoader:
             else:
                 print("couldn't load all the containers")
 
-
         if method == "genetic":
             if by_date:
                 container_list.sort(key=lambda x: x.timestamp.date_to_number_of_days(), reverse=False)
             if not by_date:
                 container_list.sort(key=lambda x: x.volume, reverse=True)
+            z = 0
+            best = []
+            best_fitness = 0
+            while z < 3:
+                if by_date:
+                    container_list.sort(key=lambda x: x.timestamp.date_to_number_of_days(), reverse=False)
+                if not by_date:
+                    container_list.sort(key=lambda x: x.volume, reverse=True)
+                solution = [random.randint(0, ship.x), random.randint(0 , ship.y)]
+                best = solution
+                while ship.load_container_on_deck_at_coordinates(ship.decks[0], container_list[0], solution[0],
+                                                           solution[1]) == 1:
+                    solution = [random.randint(0, ship.x), random.randint(0, ship.y)]
+                containers_to_remove = []
+
+                containers_to_remove.append(container_list[0])
+                i = 1
+                if len(container_list) >= 6:
+                    for j in range(1, 5):
+                        if ship.load_container_on_deck_at_coordinates(ship.decks[i], container_list[j],0, 0) == 1:
+                            i -= 1
+                            continue
+                        containers_to_remove.append(container_list[j])
+                        i += 1
+                    for contain in containers_to_remove:
+                        container_list.remove(contain)
+
+                containers_to_remove = []
+                for contain in container_list:
+                    if ship.load_container(contain) == 0:
+                        containers_to_remove.append(contain)
+
+                for contain in containers_to_remove:
+                    container_list.remove(contain)
+
+                if len(container_list) == 0:
+                    print("loaded all the containers")
+                else:
+                    print("couldn't load all the containers")
+
+                if len(ship.containers) > best_fitness:
+                    best = solution
+
+                container_list.extend(ship.unload_ship())
+                ship.reset()
+                z += 1
+
+            solution =  best
+            if by_date:
+                container_list.sort(key=lambda x: x.timestamp.date_to_number_of_days(), reverse=False)
+            if not by_date:
+                container_list.sort(key=lambda x: x.volume, reverse=True)
+
+            containers_to_remove = []
+            ship.load_container_on_deck_at_coordinates(ship.decks[0], container_list[0], solution[0],
+                                                       solution[1])
+            containers_to_remove.append(container_list[0])
+            i = 1
+            if len(container_list) >= 6:
+                for j in range(1, 5):
+                    if ship.load_container_on_deck_at_coordinates(ship.decks[i], container_list[j],0, 0) == 1:
+                        i -= 1
+                        continue
+                    containers_to_remove.append(container_list[j])
+                    i += 1
+                for contain in containers_to_remove:
+                    container_list.remove(contain)
+
+            containers_to_remove = []
+            for contain in container_list:
+                if ship.load_container(contain) == 0:
+                    containers_to_remove.append(contain)
+
+            for contain in containers_to_remove:
+                container_list.remove(contain)
+
+            if len(container_list) == 0:
+                print("loaded all the containers")
+            else:
+                print("couldn't load all the containers")
+
+            if len(ship.containers) > best_fitness:
+                best = solution
 
 
         return ship.containers
@@ -188,6 +272,61 @@ class Ship:
                 self.decks.append(new_deck3)
             container.position_x = deck.origin_x
             container.position_y = deck.origin_y
+            self.containers.append(container)
+            self.current_volume = self.current_volume - container.volume
+            self.current_capacity = self.current_capacity - 1
+
+            return 0
+        else:
+            return 1
+
+    def load_container_on_deck_at_coordinates(self, deck, container, x, y):
+        if self.current_capacity == 0:
+            print("Ship is full(capacity left = 0")
+            return 1
+        if x + container.x <= deck.x and container.y + y <= deck.y:
+            load = 1
+        elif container.y + y <= deck.x and container.x + x <= deck.y:
+            temp = container.x
+            container.x = container.y
+            container.y = temp
+            temp = x
+            x = y
+            y = temp
+            load = 1
+        else:
+            load = 0
+
+        if load == 1:
+            new_deck3 = Deck(deck.x - container.x-x, container.y, deck.origin_x + x + container.x, deck.origin_y + y)
+            new_deck1 = Deck(container.x, deck.y - container.y - y, deck.origin_x + x, deck.origin_y + y + container.y)
+            new_deck2 = Deck(deck.x - container.x - x, deck.y - container.y - y, deck.origin_x + x + container.x,
+                             deck.origin_y + y + container.y)
+            new_deck4 = Deck(deck.x - x - container.x, y, deck.origin_x + x + container.x,
+                             deck.origin_y + deck.origin_y)
+            new_deck5 = Deck(container.x, y, deck.origin_x + x, deck.origin_y)
+            new_deck6 = Deck(x, y, deck.origin_x, deck.origin_y)
+            new_deck7 = Deck(x, container.y, deck.origin_x, deck.origin_y + y)
+            new_deck8 = Deck(x, deck.y - y - container.y, deck.origin_x, deck.origin_y + container.y + y)
+            self.decks.remove(deck)
+            if new_deck1.size > 0:
+                self.decks.append(new_deck1)
+            if new_deck2.size > 0:
+                self.decks.append(new_deck2)
+            if new_deck3.size > 0:
+                self.decks.append(new_deck3)
+            if new_deck4.size > 0:
+                self.decks.append(new_deck4)
+            if new_deck5.size > 0:
+                self.decks.append(new_deck5)
+            if new_deck6.size > 0:
+                self.decks.append(new_deck6)
+            if new_deck7.size > 0:
+                self.decks.append(new_deck7)
+            if new_deck8.size > 0:
+                self.decks.append(new_deck8)
+            container.position_x = deck.origin_x + x
+            container.position_y = deck.origin_y + y
             self.containers.append(container)
             self.current_volume = self.current_volume - container.volume
             self.current_capacity = self.current_capacity - 1
@@ -372,14 +511,14 @@ class Port:
             self.not_resolved = 0
         return 0
 
-    def resolve_port_with_inf_ships(self,generate_trip_reports):
+    def resolve_port_with_inf_ships(self,generate_trip_reports, method):
         self.ships.sort(key=lambda x: x.volume, reverse=False)
         ships_to_send = []
         for destination in self.containers_with_destination:
             while len(destination) > 0:
                 sent = 0
                 for ship in self.ships:
-                    ShipLoader.LoadShip(ship, destination, 2,True)
+                    ShipLoader.LoadShip(ship, destination, 2,True, method)
                     if len(destination) > 0 and self.ships.index(ship) != len(self.ships) - 1:
                         destination.extend(ship.containers)
                         ship.containers.clear()
