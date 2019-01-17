@@ -132,6 +132,47 @@ class ShipLoader:
             if len(ship.containers) > best_fitness:
                 best = solution
 
+        if method == "random":
+            if by_date:
+                container_list.sort(key=lambda x: x.timestamp.date_to_number_of_days(), reverse=False)
+            if not by_date:
+                container_list.sort(key=lambda x: x.volume, reverse=True)
+
+            containers_to_remove = []
+
+            solution = [random.randint(0, ship.x), random.randint(0, ship.y)]
+
+            ship.load_container_on_deck_at_coordinates(ship.decks[0], container_list[0], solution[0],
+                                                             solution[1])
+            containers_to_remove.append(container_list[0])
+            container_list.remove(containers_to_remove[0])
+            containers_to_remove = []
+
+            for contain in container_list:
+                if ship.load_container(contain,True) == 0:
+                    containers_to_remove.append(contain)
+
+            for contain in containers_to_remove:
+                container_list.remove(contain)
+
+            for j in range(0, merges_number):
+                for i in range(0, len(ship.decks)):
+                    ship.merge_deck()
+                print("merge decks used \n")
+
+                containers_to_remove = []
+                for contain in container_list:
+                    if ship.load_container(contain) == 0:
+                        containers_to_remove.append(contain)
+
+                for contain in containers_to_remove:
+                    container_list.remove(contain)
+
+            if len(container_list) == 0:
+                print("loaded all the containers")
+            else:
+                print("couldn't load all the containers")
+
 
         return ship.containers
 
@@ -212,12 +253,16 @@ class Ship:
 
         return 1
 
-    def load_container(self, container):
+    def load_container(self, container, Random = False):
         loaded = 0
         for deck in self.decks:
             if loaded == 0:
-                if self.load_container_on_deck(deck, container) == 0:
-                    loaded = 1
+                if not Random:
+                    if self.load_container_on_deck(deck, container) == 0:
+                        loaded = 1
+                else:
+                    if self.load_container_on_deck_at_coordinates(deck,container,random.randint(0,deck.x),random.randint(0,deck.y)) == 0:
+                        loaded = 1
 
         if loaded == 1:
             # print("container loaded successfully \n")
