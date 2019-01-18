@@ -3,7 +3,7 @@ from Classes import Port
 from Classes import Ship
 from RandomGenerators import ContainerGenerator
 from FileExchange import FileExchange
-ship_containers('ExampleContainerList.txt', 'ExampleResults.txt', True, True,"random")
+ship_containers('ExampleContainerList.txt', 'ExampleResults.txt', True, True, "random")
 
 ship = ContainerGenerator.GenerateShip(1,70,200,10,50,100,10)
 ship2 = ContainerGenerator.GenerateShip(1,70,200,10,50,100,10)

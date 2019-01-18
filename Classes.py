@@ -398,8 +398,9 @@ class Ship:
         background = pygame.transform.scale(background, [math.floor(scale * self.x),
                                                          math.floor(scale * (self.y + math.floor(300 / 700 * self.y)))])
         running = True
-        pygame.display.set_caption(
-            str(self.ID) + " Destination " + str(current_destination) + "->" + str(self.containers[0].destination))
+        if(len(self.containers)!=0):
+            pygame.display.set_caption(
+                str(self.ID) + " Destination " + str(current_destination) + "->" + str(self.containers[0].destination))
 
         # main loop
         while running:
